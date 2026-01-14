@@ -1,0 +1,9 @@
+
+{
+  "name": "GCS Scene Explorer",
+  "description": "A sophisticated Google Cloud Storage file explorer that visualizes image collections and parses scene metadata using Gemini for intelligent insights.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
