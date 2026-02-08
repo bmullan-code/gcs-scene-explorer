@@ -12,6 +12,7 @@ interface SceneTableProps {
 
 const SceneTable: React.FC<SceneTableProps> = ({ scenes, bucket, path, token }) => {
   const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
+  const [isFullPageOpen, setIsFullPageOpen] = useState(false);
 
   if (!scenes || scenes.length === 0) return null;
 
@@ -119,14 +120,24 @@ const SceneTable: React.FC<SceneTableProps> = ({ scenes, bucket, path, token }) 
                     Referenced Asset
                   </label>
                   {getImageFromScene(selectedScene) ? (
-                    <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 aspect-video relative">
-                      <AuthenticatedImage 
-                        bucket={bucket}
-                        name={`${path}${getImageFromScene(selectedScene)}`}
-                        token={token}
-                        alt="Scene Asset"
-                        className="w-full h-full object-contain"
-                      />
+                    <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 aspect-video relative group/img">
+                      <button
+                        onClick={() => setIsFullPageOpen(true)}
+                        className="w-full h-full text-left relative focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl overflow-hidden"
+                      >
+                        <AuthenticatedImage
+                          bucket={bucket}
+                          name={`${path}${getImageFromScene(selectedScene)}`}
+                          token={token}
+                          alt="Scene Asset"
+                          className="w-full h-full object-contain"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors flex items-center justify-center">
+                          <svg className="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                          </svg>
+                        </div>
+                      </button>
                     </div>
                   ) : (
                     <div className="bg-slate-50 rounded-xl border border-dashed border-slate-200 p-8 flex flex-col items-center justify-center text-slate-400 space-y-2 aspect-video">
@@ -146,6 +157,46 @@ const SceneTable: React.FC<SceneTableProps> = ({ scenes, bucket, path, token }) 
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Lightbox Modal */}
+      {isFullPageOpen && selectedScene && getImageFromScene(selectedScene) && (
+        <div
+          className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-8 bg-slate-900/95 backdrop-blur-sm transition-all animate-in fade-in duration-300"
+          onClick={() => setIsFullPageOpen(false)}
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute -top-12 right-0 text-white/70 hover:text-white p-2 transition-colors"
+              onClick={() => setIsFullPageOpen(false)}
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="bg-white/5 rounded-xl p-1 shadow-2xl overflow-hidden flex items-center justify-center">
+              <AuthenticatedImage
+                bucket={bucket}
+                name={`${path}${getImageFromScene(selectedScene)}`}
+                token={token}
+                alt="Scene Asset"
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+            </div>
+
+            <div className="mt-6 text-center w-full max-w-2xl">
+              <h4 className="text-white font-bold truncate text-lg">
+                {getImageFromScene(selectedScene)}
+              </h4>
+              <p className="text-slate-400 text-sm mt-1 font-mono">
+                {`${path}${getImageFromScene(selectedScene)}`}
+              </p>
             </div>
           </div>
         </div>
